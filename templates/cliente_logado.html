@@ -101,7 +101,7 @@
         Object.keys(inputs).forEach(function (key){
         //console.log(inputs[key].value)
         inputs[key].name=inputs[key].value
-        lista_inputs.push(inputs[key].value)
+        lista_inputs.push(inputs[key].value.replace(',','.'))
         })
         console.log(lista_inputs)
         document.getElementById('valor_a_resgatar').value=lista_inputs;

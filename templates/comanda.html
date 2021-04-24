@@ -30,12 +30,58 @@
         </table>
     </div>
 
-    
     <br><br><br>
+    <div>
+
+        <button id="teste">Clique para Saber o Valor Total e Valor com 10%</button><br><br>
+        
+    </div>
+    <div class="container" id="valores_totais">
+        
+    </div>
 
 </div>
 <script type="text/javascript">
     $('#prox').DataTable();
+
+    $(document).ready(function(){
+        
+        $('#teste').on('click', function(){
+            var button_s = $('#teste');
+
+            // Disable the submit button while evaluating if the form should be submitted
+            button_s.prop('disabled', true);
+            console.log('Teste')
+            $.ajax({
+                url: '/teste',
+                type: 'POST',
+                
+                }).then(function(data){
+                    console.log(data)
+                    let valores_totais_template= `<div class="card border-light mb-3" style="max-width: 18rem;">
+                    <div class="card-header">Valores Totais</div>
+                    <div class="card-body">
+                    <p class="card-text">${data['contatotal']}</p>
+                    </div>
+                    </div>`
+
+                    let valores_totais_mais_template= `<div class="card border-light mb-3" style="max-width: 18rem;">
+                    <div class="card-header">Valores Totais Mais 10%</div>
+                    <div class="card-body">
+                    <p class="card-text">${data['contatotal_mais_dez']}</p>
+                    </div>
+                    </div>`
+
+                    $('#valores_totais').append(valores_totais_template)
+                    $('#valores_totais').append(valores_totais_mais_template)
+                })
+            })
+        
+        
+            
+
+    })
+   
 </script>
 
 {% endblock %}

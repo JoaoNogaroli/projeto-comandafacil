@@ -1,5 +1,5 @@
 from inicializacao import app, db
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, session
 import os
 from classe_modelo import Users, Restaurante
 from sqlalchemy import or_
@@ -103,6 +103,7 @@ def grouper(n, iterable, fillvalue=None):
 @app.route("/iniciar_comanda", methods=['POST'])
 def iniciar_comanda():
     valor_a_resgatar = request.form['valor_a_resgatar']
+    print(valor_a_resgatar)
     valor_a_resgatar_alterado = valor_a_resgatar.split(',')
     valores_finais = []
     for i in range(1, len(valor_a_resgatar_alterado)):
@@ -138,10 +139,43 @@ def iniciar_comanda():
         print(e)
     #TRANSFORMOU EM DATAFRAME FINAL
     new = pd.DataFrame.from_dict(res)
-    print(new)
+    print(items)
     linhas = new.shape[0]
     print(new.shape[0])
+    session['new'] = new.to_json()
+
     return render_template('comanda.html', results=results, items=items, linhas=linhas, len=len)
+
+@app.route("/teste", methods=['POST'])
+def teste():
+    new = session['new']
+    print(new)
+    novo_df = pd.read_json(new)
+    print(novo_df.dtypes)
+    print(novo_df)
+    print(novo_df.shape)
+    
+
+    print('-------')
+    print(novo_df)
+    novo_df['Quantidade'] = novo_df['Quantidade'].astype(float)
+    novo_df['Preço/Un'] = novo_df['Preço/Un'].astype(float)
+    novo_df['SomaValores'] = novo_df['Quantidade'] * novo_df['Preço/Un']
+
+    contatotal = novo_df['SomaValores'].sum()
+    contatotal_mais_dez = (contatotal*1.1)
+    contatotal_mais_dez = ("{:.2f}".format(contatotal_mais_dez))
+    print(novo_df)
+
+
+    
+    print('-------')
+    print(novo_df.dtypes)
+    print('-------')
+    print('R$: ',contatotal)
+    print('-------')
+    print('Como os 10% '+'R$: '+ str(contatotal_mais_dez))
+    return {'contatotal':contatotal, 'contatotal_mais_dez':contatotal_mais_dez}
 
 if __name__  == '__main__':
     app.run(debug=True, port=port)
