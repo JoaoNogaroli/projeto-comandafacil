@@ -32,12 +32,31 @@
 
     <br><br><br>
     <div>
+        <button id="teste" type="button" class="btn btn-primary btn-lg btn-block">Fechar Comanda</button>
 
-        <button id="teste">Clique para Saber o Valor Total e Valor com 10%</button><br><br>
         
     </div>
+    <br>
     <div class="container" id="valores_totais">
-        
+        <div class="row">
+            <div class="col-sm" id="div_esquerda">
+              
+            </div>
+            <div class="col-sm" id='div_direita'>
+             
+            </div>
+
+            <div class="col-sm" id='div_dez'>
+             
+            </div>
+            
+          </div>
+    </div>
+    <hr>
+    <div class="container" >
+        <div class="row"  id="div_valores_clientes">
+            
+        </div>
     </div>
 
 </div>
@@ -51,29 +70,78 @@
 
             // Disable the submit button while evaluating if the form should be submitted
             button_s.prop('disabled', true);
-            console.log('Teste')
+            //console.log('Teste')
             $.ajax({
                 url: '/teste',
                 type: 'POST',
                 
                 }).then(function(data){
                     console.log(data)
+                    
+                    var valor_dez_por_cliente = data['valor_dez_por_cliente']
+                    valor_dez_por_cliente = Number(valor_dez_por_cliente)
+
+                    var dez_por_cento = data['dez_por_cento']
+                    dez_por_cento = dez_por_cento.toString().replace('.',',')
+                    let valores_dez= `<div class="card border-light mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Valor do 10%</div>
+                        <div class="card-body">
+                        <p class="card-text">R$: ${dez_por_cento}</p>
+                        </div>
+                        </div>`
+                    
+                    var contatotal = data['contatotal']
+                    contatotal = contatotal.toString().replace('.',',')
+
+                    var contatotal_mais_dez = data['contatotal_mais_dez']
+                    contatotal_mais_dez = contatotal_mais_dez.toString().replace('.',',')
                     let valores_totais_template= `<div class="card border-light mb-3" style="max-width: 18rem;">
                     <div class="card-header">Valores Totais</div>
                     <div class="card-body">
-                    <p class="card-text">${data['contatotal']}</p>
+                    <p class="card-text">R$: ${contatotal}</p>
                     </div>
                     </div>`
 
                     let valores_totais_mais_template= `<div class="card border-light mb-3" style="max-width: 18rem;">
                     <div class="card-header">Valores Totais Mais 10%</div>
                     <div class="card-body">
-                    <p class="card-text">${data['contatotal_mais_dez']}</p>
+                    <p class="card-text">R$: ${contatotal_mais_dez}</p>
                     </div>
                     </div>`
 
-                    $('#valores_totais').append(valores_totais_template)
-                    $('#valores_totais').append(valores_totais_mais_template)
+                    $('#div_esquerda').append(valores_totais_template)
+                    $('#div_direita').append(valores_totais_mais_template)
+                    $('#div_dez').append(valores_dez)
+
+                    var lista_final = []
+                    var object_lista = data['lista_final']
+
+                    Object.keys(object_lista).forEach(function(key){
+                        item = object_lista[key];
+                        lista_final.push(item);
+                    });
+                    //console.log(lista_final)
+                    //console.log('------------')
+
+                    lista_final.forEach(function(essa){
+                        //console.log(essa[1])
+                        //console.log(valor_dez_por_cliente)
+                        var soma = essa[1] + valor_dez_por_cliente
+                        //console.log("SoMA " + soma)
+
+                        let valor_por_cliente= `<div class="col-sm">
+                            <div class="card border-light mb-3" style="max-width: 18rem;">
+                            <div class="card-header">${essa[0].toString().replace('.',',')} </div>
+                            <div class="card-body">
+                            <p class="card-text">R$: ${essa[1].toString().replace('.',',')}+ ${valor_dez_por_cliente} = <strong>R$: ${soma}</strong></p>
+                            </div>
+                            </div>
+                            </div>`
+                        $('#div_valores_clientes').append(valor_por_cliente)
+                    })
+
+                   
+
                 })
             })
         

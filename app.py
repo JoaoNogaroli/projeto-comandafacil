@@ -1,5 +1,5 @@
 from inicializacao import app, db
-from flask import Flask, request, render_template, url_for, session
+from flask import Flask, request, render_template, url_for, session, json
 import os
 from classe_modelo import Users, Restaurante
 from sqlalchemy import or_
@@ -103,7 +103,7 @@ def grouper(n, iterable, fillvalue=None):
 @app.route("/iniciar_comanda", methods=['POST'])
 def iniciar_comanda():
     valor_a_resgatar = request.form['valor_a_resgatar']
-    print(valor_a_resgatar)
+    #print(valor_a_resgatar)
     valor_a_resgatar_alterado = valor_a_resgatar.split(',')
     valores_finais = []
     for i in range(1, len(valor_a_resgatar_alterado)):
@@ -139,9 +139,9 @@ def iniciar_comanda():
         print(e)
     #TRANSFORMOU EM DATAFRAME FINAL
     new = pd.DataFrame.from_dict(res)
-    print(items)
+    #print(items)
     linhas = new.shape[0]
-    print(new.shape[0])
+    #print(new.shape[0])
     session['new'] = new.to_json()
 
     return render_template('comanda.html', results=results, items=items, linhas=linhas, len=len)
@@ -149,33 +149,68 @@ def iniciar_comanda():
 @app.route("/teste", methods=['POST'])
 def teste():
     new = session['new']
-    print(new)
+    #print(new)
     novo_df = pd.read_json(new)
-    print(novo_df.dtypes)
-    print(novo_df)
-    print(novo_df.shape)
+    #print(novo_df.dtypes)
+    #print(novo_df)
+    #print(novo_df.shape)
     
 
-    print('-------')
-    print(novo_df)
+    #print('-------')
+    #print(novo_df)
     novo_df['Quantidade'] = novo_df['Quantidade'].astype(float)
     novo_df['Preço/Un'] = novo_df['Preço/Un'].astype(float)
     novo_df['SomaValores'] = novo_df['Quantidade'] * novo_df['Preço/Un']
 
     contatotal = novo_df['SomaValores'].sum()
+    
+
     contatotal_mais_dez = (contatotal*1.1)
     contatotal_mais_dez = ("{:.2f}".format(contatotal_mais_dez))
-    print(novo_df)
-
+    #print(novo_df)
+    contatotal = ("{:.2f}".format(contatotal))
 
     
-    print('-------')
-    print(novo_df.dtypes)
-    print('-------')
-    print('R$: ',contatotal)
-    print('-------')
-    print('Como os 10% '+'R$: '+ str(contatotal_mais_dez))
-    return {'contatotal':contatotal, 'contatotal_mais_dez':contatotal_mais_dez}
+    #print('-------')
+    #print(novo_df.dtypes)
+    #print('-------')
+    #print('R$: ',contatotal)
+    #print('-------')
+    #print('Como os 10% '+'R$: '+ str(contatotal_mais_dez))
+
+    #-------- Parte dos valores totais terminada
+    valores_de_cada_um = novo_df.groupby(by=["Cliente"])['SomaValores'].sum()
+
+    #print(valores_de_cada_um)
+    #print('-------')
+    #print(valores_de_cada_um.to_json(orient='split'))
+    valores_de_cada_um = valores_de_cada_um.to_json(orient='split')
+    #print(valores_de_cada_um)
+    #print('2 -------')
+    resp = json.loads(valores_de_cada_um)
+    lista_clientes= resp['index']
+    #print(lista_clientes)
+    #print('3 -------')
+    lista_clientes_conta= resp['data']
+    #print(lista_clientes_conta)
+    lista_final = list(zip(lista_clientes,lista_clientes_conta))
+    #print(lista_final)
+
+    #--------- Parte dos valores de cada um termianda
+    dez_por_cento =  float(contatotal_mais_dez)-float(contatotal)
+    dez_por_cento_sem_format = dez_por_cento
+    dez_por_cento = ("{:.2f}".format(dez_por_cento))
+
+    #print(dez_por_cento)
+    #--------- Parte do valor dos 10% termianda
+
+    quantidade_de_clientes = float(len(lista_clientes))
+    valor_dez_por_cliente = dez_por_cento_sem_format/quantidade_de_clientes
+    valor_dez_por_cliente = ("{:.2f}".format(valor_dez_por_cliente))
+
+    #print(valor_dez_por_cliente)
+
+    return {'contatotal':contatotal, 'contatotal_mais_dez':contatotal_mais_dez, 'lista_final':lista_final,'dez_por_cento':dez_por_cento, 'valor_dez_por_cliente':valor_dez_por_cliente}
 
 if __name__  == '__main__':
     app.run(debug=True, port=port)
