@@ -1,0 +1,254 @@
+{% extends 'base.html' %} {% block content %}
+
+
+ <br><br><br>   
+<div class="container shadow-sm p-3 mb-5 bg-white rounded">
+    <div class="row align-items-center">
+        <div class="col align-self-center text-center justify-content-sm-center">
+            <div class="card " style="width: 18rem;">
+                <img class="card-img-top" src="static\img\client.jpeg" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-family: KIONA;">Sou CLIENTE</h5>
+                    <p class="card-text">Faça seu Cadastro e Logue-se</p>
+                </div>
+                    <ul class="list-group list-group-flush">
+                    <a href="#"><li class="list-group-item">Esqueci minha senha</li></a>
+                    
+                    </ul>
+                <div class="card-body">
+                    <button type="button" class="btn position-relative rounded" data-bs-toggle="modal" data-bs-target="#modalcadastrocliente">
+                        Cadastre-se aqui.
+                    </button><hr>
+                    <button type="button" class="btn position-relative rounded" data-bs-toggle="modal" data-bs-target="#modallogincliente">
+                        Faça seu login.
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col align-self-center text-center justify-content-sm-center">
+            <div class="card " style="width: 18rem;">
+        
+                <img class="card-img-top" src="static\img\rest.jpeg" alt="Card image cap">
+                <div class="card-body">
+                <h5 class="card-title" style="font-family: KIONA;">Sou RESTAURANTE</h5>
+                <p class="card-text">Faça o Cadastro do seu Restaurante</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <a href="#"><li class="list-group-item">Esqueci minha senha</li></a>
+                
+                </ul>
+                <div class="card-body">
+                    <button type="button" class="btn position-relative rounded" data-bs-toggle="modal" data-bs-target="#modalcadastrorestaurante">
+                        Cadastre-se aqui.
+                    </button><hr>
+                    <button type="button" class="btn position-relative rounded" data-bs-toggle="modal" data-bs-target="#modalloginrestaurante">
+                        Faça seu Login.
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal CADASTRAR -->
+        <div class="modal fade" id="modalcadastrocliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Faça seu Cadastro!</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form action="/cadastro" method="post">
+                    <div class="container">
+
+                        <div class="form-row">
+                            <div class="col-sm">
+                                <a>Insira seu Nome:</a><input type="text" id="nome" class="form-control my-3 p-2" name="nome" >
+                            </div>   
+                            <div class="col-sm">
+                                <a>Insira seu Email:</a><input type="text" id="email" name="email" class="form-control my-3 p-2">
+                            </div>   
+                            <div class="col-sm">
+                                <a>Insira sua Senha:</a><input type="password" id="senha" name="senha" class="form-control my-3 p-2">
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <h5 id="cadastrado"></h5>
+                    <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>-->
+                    <input type="button" id="botao" class="btn btn-secondary" value="Enviar">
+                </form>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- Modal LOGAR -->
+        <div class="modal fade" id="modallogincliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Faça seu Login!</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form action="/logar" method="post">
+                    <div class="container">
+
+                        <div class="form-row">
+                            <div class="col-sm">
+                                <a>Insira seu Email:</a><input type="text" id="email" name="email" class="form-control my-3 p-2">
+                            </div>   
+                            <div class="col-sm">
+                                <a>Insira sua Senha:</a><input type="password" id="senha" name="senha" class="form-control my-3 p-2">
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    
+                    <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>-->
+                    <input type="submit" id="botao_logar" class="btn btn-secondary" value="Logar">
+                </form>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- Modal Cadastro_restaurante -->
+        <div class="modal fade" id="modalcadastrorestaurante" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Faça o Cadastro do seu Restaurante!</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form action="/cadastro_restaurante" method="post">
+                    <div class="container">
+
+                        <div class="form-row">
+                            <div class="col-sm">
+                                <a>Insira o Nome do seu Restaurante:</a><input type="text" placeholder="Nome do restaurante" id="nome_res" class="form-control my-3 p-2" name="nome_res" >
+                            </div>   
+                            <div class="col-sm">
+                                <a>Insira o Email:</a><input type="text" id="email_res" placeholder="Digite seu Email" name="email_res" class="form-control my-3 p-2">
+                            </div>   
+                            <div class="col-sm">
+                                <a>Insira a Senha:</a><input type="password" placeholder="Digite sua senha" id="senha_res" name="senha_res" class="form-control my-3 p-2">
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <h5 id="cadastrado_restaurante"></h5>
+
+                    <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>-->
+                    <input type="button" id="botao_cadastro_restaurante" class="btn btn-secondary" value="Cadastrar">
+                </form>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- Modal Logar_restaurante -->
+        <div class="modal fade" id="modalloginrestaurante" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Faça o Login do seu Restaurante!</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form action="/logar_restaurante" method="post">
+                    <div class="container">
+
+                        <div class="form-row">
+                               
+                            <div class="col-sm">
+                                <a>Insira o Email:</a><input type="text" id="email_res" placeholder="Digite seu Email" name="email_res" class="form-control my-3 p-2">
+                            </div>   
+                            <div class="col-sm">
+                                <a>Insira a Senha:</a><input type="password" placeholder="Digite sua senha" id="senha_res" name="senha_res" class="form-control my-3 p-2">
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <h5 id="cadastrado_restaurante"></h5>
+
+                    <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>-->
+                    <input type="submit" id="botao_cadastro_restaurante" class="btn btn-secondary" value="Logar">
+                </form>
+                </div>
+              </div>
+            </div>
+        </div>
+
+    </div> 
+    
+</div>
+<script>
+
+$(document).ready(function(){
+   
+    $('#botao').on('click', function(){
+        nome = document.getElementById('nome').value;
+        email = document.getElementById('email').value;
+        senha = document.getElementById('senha').value;
+        document.getElementById('cadastrado').innerHTML='Aguarde um momento...'
+        console.log("Clicando no botao")
+        console.log(
+            {'nome': nome,
+            'email': email
+            
+        })
+        $.ajax({
+            url: '/cadastro',
+            type: 'post',
+            data: {
+                'nome':nome,
+                'email':email,
+                'senha':senha
+            },
+            success: function(data){
+                
+                document.getElementById('cadastrado').innerHTML=data
+                document.getElementById('nome').value= '';
+                document.getElementById('email').value= '';
+                document.getElementById('senha').value= '';
+                
+                
+            },
+                       
+        })
+    });
+    
+
+    $('#botao_cadastro_restaurante').on('click', function(){
+        nome_res = $('#nome_res').val();
+        email_res = $('#email_res').val();
+        senha_res = $('#senha_res').val();
+        $.ajax({
+            url:'/cadastro_restaurante',
+            type:'post',
+            data:{
+                'nome_res':nome_res,
+                'email_res': email_res,
+                'senha_res': senha_res
+            },
+            success: function(data){
+                
+                document.getElementById('cadastrado_restaurante').innerHTML = data
+                
+                document.getElementById('nome_res').value = "";
+                document.getElementById('email_res').value = "";
+                document.getElementById('senha_res').value = "";
+            }
+        })
+    })
+
+})
+</script>
+{% endblock %}

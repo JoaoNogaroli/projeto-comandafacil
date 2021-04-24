@@ -1,0 +1,162 @@
+{% extends 'base.html' %} {% block content %}
+{% if current_user.is_authenticated %}
+<ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link active" href="#">Active</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Link</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Link</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link disabled" href="#">Disabled</a>
+    </li>
+  </ul>
+<div class="container" id="container"><br>
+  <h2>Bem vindo: {{ current_user.nome }}</h2><br>
+  <!--<h2>{{ current_user.email }}</h2>-->
+  <div class="d-grid gap-2 shadow  mb-5 bg-white rounded">
+      <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+            <h1 class="display-4">Vamos Começar a Comanda?</h1>
+            <p class="lead">Adicione seus amigos, pedidos e preços.</p>
+          </div>
+        </div></div><br>
+  <p style="font-size: 20px;"><a><strong> Antes de mais nada...</strong></a><a style="font-family: kiona;"> Em qual restaurante estamos?</p>
+  <select id="nome_restaurante_select" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" >
+      <option value="none_">--Escolha o resturante--</option>
+      {% for restaurante in restaurantes %}
+      <option value="{{restaurante}}">{{restaurante}}</option>
+      {% endfor %}
+  </select>
+  <br>
+  <button id="for" type="button" class="btn btn-primary" onclick="comecar()" >Salvar Restaurente</button>
+  <form action="/iniciar_comanda" method="POST" >
+
+    <input value="valor_a_resgatar" id="valor_a_resgatar" name="valor_a_resgatar" type="text" readonly style="width: 1px;;background-color: white; color:black; text-decoration: none;border:none;">
+    <div class="row">
+      <div class="col-sm-12 text-center"><h4 class="display-3" id="nome_restaurante_subs"></h4></div>
+    </div>
+    <div class="row"  style="font-family: arial;">
+      <div id="div_esquerda" class="col-sm-10" style="display: flex;"><hr>
+        
+        {% for item in lista %}
+          <div class="col-sm-3">
+          
+              <div class="card">
+                  <div id="{{'input' + item}}" class="card-body">
+                      <h5 id="{{item}}" class="card-title">{{item}}</h5>
+                      <!--input name="{{item}}" value="{{item}}">-->
+                  </div><br>
+              </div><br>
+              
+          </div>
+          {% endfor %}
+      
+      </div>
+      <div id="div_direita" class="col-sm-2"><hr></div>
+    </div>
+  </form>
+</div>
+
+<script>
+
+  function comecar(){
+      var nome_restaurante = $('#nome_restaurante_select').val();
+      console.log(nome_restaurante)
+      $('#nome_restaurante_subs').text(nome_restaurante);
+
+      var button_s = $('#for');
+
+      // Disable the submit button while evaluating if the form should be submitted
+      button_s.prop('disabled', true);
+
+      //ESQUERDA
+      var div_e = document.getElementById('div_esquerda');
+
+
+
+
+
+      //DIREITA
+      var a = document.createElement('a');
+      a.innerHTML = 'Adicionar uma linha'
+      var svg = `<svg id='adicionar' xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="a" viewBox="0 0 16 16" >
+                      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                  </svg>
+                  `
+
+      var botao_salvar_valores = document.createElement('button');
+      botao_salvar_valores.type = 'submit';
+      botao_salvar_valores.innerHTML = 'Analisar Valores';
+      botao_salvar_valores.className = "btn btn-success";
+      botao_salvar_valores.onclick = function(){
+        console.log('botao salvar valores')
+        var inputs = document.getElementsByTagName('input');
+        //console.log(inputs)
+        var lista_inputs = [];
+        Object.keys(inputs).forEach(function (key){
+        //console.log(inputs[key].value)
+        inputs[key].name=inputs[key].value
+        lista_inputs.push(inputs[key].value)
+        })
+        console.log(lista_inputs)
+        document.getElementById('valor_a_resgatar').value=lista_inputs;
+        console.log(document.getElementById('valor_a_resgatar').value)
+      }
+      var br = document.createElement('br')
+
+      var div_d = document.getElementById('div_direita');
+      div_d.appendChild(a);
+
+      $('#div_direita').append(svg)
+      div_d.appendChild(br);
+      
+
+
+      div_d.appendChild(botao_salvar_valores);
+
+      $('#adicionar').click(function(){
+          console.log($('#adicionar'))
+          console.log("SVG")
+            var lista = document.getElementsByTagName('h5');
+              
+              var lista_id = [] ;
+
+              Object.keys(lista).forEach(function (key){
+                  item = lista[key].id
+                  console.log(item);
+                  lista_id.push(item);
+              })
+              //console.log(lista_id);
+            
+            lista_id.forEach(function(essa){
+
+              var divv = document.getElementById('input'+essa);
+              var input_e = document.createElement('input');
+              
+              input_e.className = 'form-control';
+              input_e.placeholder = 'Insira o valor da linha';
+              /*var e = document.forms["formu "+essa] ;
+              e= e.getElementsByTagName('input');
+              qnt_input = e.length-1;
+              input_e.name=qnt_input;*/
+              
+              var br = document.createElement('br');
+              divv.appendChild(br);
+              divv.appendChild(input_e);
+            
+            })
+      })  
+
+      //$('#prox').DataTable();
+   
+}
+    
+    
+</script>
+{% endif %}
+{% endblock %}
