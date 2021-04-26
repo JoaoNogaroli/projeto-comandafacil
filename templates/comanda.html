@@ -1,7 +1,13 @@
 {% extends 'base.html' %} {% block content %}
 
-<div class="container">
+<style>
+    body{
+        background-color: black;
+    }
+</style>
+<div class="container p-3 shadow-sm p-3 mb-5 bg-white rounded " >
     <div class="mt-4">
+        <h2 class="text-center" style="font-family: KIONA;">Comanda Fácil</h2><hr>
         <table id="prox" class="display table responsive" style="width: 100%;">
 
         <thead>
@@ -32,12 +38,12 @@
 
     <br><br><br>
     <div>
-        <button id="teste" type="button" class="btn btn-primary btn-lg btn-block">Fechar Comanda</button>
+        <button id="teste" type="button" class="btn btn-dark btn-lg btn-block">Fechar Comanda</button>
 
         
     </div>
     <br>
-    <div class="container" id="valores_totais">
+    <div class="container " id="valores_totais">
         <div class="row">
             <div class="col-sm" id="div_esquerda">
               
@@ -58,6 +64,7 @@
             
         </div>
     </div>
+
 
 </div>
 <script type="text/javascript">
@@ -81,9 +88,22 @@
                     var valor_dez_por_cliente = data['valor_dez_por_cliente']
                     valor_dez_por_cliente = Number(valor_dez_por_cliente)
 
+                    var exatos_dez_por_cliente = data['exatos_dez_por_cliente']
+                    //exatos_dez_por_cliente = Number(exatos_dez_por_cliente)
+
+                    var lista_exatos_dez_por_cliente = []
+                    
+
+                    Object.keys(exatos_dez_por_cliente).forEach(function(key){
+                        item = exatos_dez_por_cliente[key];
+                        lista_exatos_dez_por_cliente.push(item);
+                    });
+                    //console.log(lista_exatos_dez_por_cliente)
+
+
                     var dez_por_cento = data['dez_por_cento']
                     dez_por_cento = dez_por_cento.toString().replace('.',',')
-                    let valores_dez= `<div class="card border-light mb-3" style="max-width: 18rem;">
+                    let valores_dez= `<div class="card border-success mb-3" style="max-width: 18rem;">
                         <div class="card-header">Valor do 10%</div>
                         <div class="card-body">
                         <p class="card-text">R$: ${dez_por_cento}</p>
@@ -95,14 +115,14 @@
 
                     var contatotal_mais_dez = data['contatotal_mais_dez']
                     contatotal_mais_dez = contatotal_mais_dez.toString().replace('.',',')
-                    let valores_totais_template= `<div class="card border-light mb-3" style="max-width: 18rem;">
+                    let valores_totais_template= `<div class="card border-success mb-3" style="max-width: 18rem;">
                     <div class="card-header">Valores Totais</div>
                     <div class="card-body">
                     <p class="card-text">R$: ${contatotal}</p>
                     </div>
                     </div>`
 
-                    let valores_totais_mais_template= `<div class="card border-light mb-3" style="max-width: 18rem;">
+                    let valores_totais_mais_template= `<div class="card border-success mb-3" style="max-width: 18rem;">
                     <div class="card-header">Valores Totais Mais 10%</div>
                     <div class="card-body">
                     <p class="card-text">R$: ${contatotal_mais_dez}</p>
@@ -121,19 +141,23 @@
                         lista_final.push(item);
                     });
                     //console.log(lista_final)
-                    //console.log('------------')
+                    
+                    
 
                     lista_final.forEach(function(essa){
-                        //console.log(essa[1])
+                        
+
+                        console.log(essa)
                         //console.log(valor_dez_por_cliente)
-                        var soma = essa[1] + valor_dez_por_cliente
+                        var soma = essa[1] + exatos_dez_por_cliente
                         //console.log("SoMA " + soma)
 
-                        let valor_por_cliente= `<div class="col-sm">
-                            <div class="card border-light mb-3" style="max-width: 18rem;">
-                            <div class="card-header">${essa[0].toString().replace('.',',')} </div>
+                        let valor_por_cliente= `<div class="col-sm-4 bg-white rounded text-center">
+                            <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+                            <div class="card-header">Cliente: ${essa[0].toString().replace('.',',')} </div>
+                            <hr>
                             <div class="card-body">
-                            <p class="card-text">R$: ${essa[1].toString().replace('.',',')}+ ${valor_dez_por_cliente} = <strong>R$: ${soma}</strong></p>
+                            <p class="card-text">R$: ${essa[1].toString().replace('.',',')}+ 10% = <strong>R$: ${essa[2].toString().replace('.',',')}</strong></p>
                             </div>
                             </div>
                             </div>`

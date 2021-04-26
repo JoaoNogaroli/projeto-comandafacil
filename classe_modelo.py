@@ -39,3 +39,15 @@ class Restaurante(db.Model, UserMixin):
 
     def verify_password(self, pwd):
         return check_password_hash(self.senha_res, pwd)
+
+class Produto(db.Model):
+    __tablename__ = 'produtos'
+    id = Column('id', Integer, primary_key=True)
+    nome_restaurante = Column('nome_restaurante', String(255), nullable=False)
+    nome_produto = Column('nome_produto', String(255), nullable=False)
+    valor_produto = Column('valor_produto', String(255), nullable=False)
+
+    def __init__(self,nome_restaurante, nome_produto, valor_produto):
+        self.nome_restaurante = nome_restaurante
+        self.nome_produto = nome_produto
+        self.valor_produto = valor_produto

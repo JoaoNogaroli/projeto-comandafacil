@@ -1,9 +1,77 @@
 {% extends 'base.html' %} {% block content %}
 {% if current_user.is_authenticated %}
+        
+    
+<div class="container">
 
-<h2>{{ current_user.nome_res }}</h2><br>
-<h2>{{ current_user.email_res }}</h2>
+        <h2>{{ current_user.nome_res }}</h2><br>
+        <h2>{{ current_user.email_res }}</h2>
+        {% endif %}
 
+        <br><br><br>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-dark position-relative rounded" data-bs-toggle="modal" data-bs-target="#modalloginrestaurante">
+            Cadastre os Produtos.
+        </button><hr>
 
-{% endif %}
+        <!-- Modal -->
+        <div class="modal fade" id="modalloginrestaurante" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Faça o Login do seu Restaurante!</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form>
+                    <input class="h3 text-center" readonly id="nomeres"  style="width:100%;background-color:transparent;text-decoration:none; border:none" value="{{ current_user.nome_res }}"></input>
+                    <div class="container">
+
+                        <div class="form-row">
+                               
+                            <div class="col-sm">
+                                <a>Insira o Produto:</a><input type="text" id="produto" placeholder="Digite o nome do Produto" name="produto" class="form-control my-3 p-2">
+                            </div>   
+                            <div class="col-sm">
+                                <a>Insira o Valor Unitário:</a><input type="text" placeholder="Digite o valor" id="valor" name="valor" class="form-control my-3 p-2">
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <h5 id="produto_cadastrado"></h5>
+
+                    <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>-->
+                    <input type="button" id="botao_cadastro_restaurante" class="btn btn-secondary" value="Cadastrar Produto">
+                </form>
+                </div>
+              </div>
+            </div>
+        </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('#botao_cadastro_restaurante').on('click', function(){
+
+            var nomeres = $('#nomeres').val()
+            console.log(nomeres)
+
+            var produto = $('#produto').val()
+            console.log(produto)
+            var valor = $('#valor').val()
+            console.log(valor)
+            $.ajax({
+                url: '/cadastrar_produto',
+                type: 'POST',
+                data: {'nomeres':nomeres,'produto': produto, 'valor':valor}
+            }).then(function(e){
+                console.log(e)
+                $('#produto_cadastrado').text(e)
+                document.getElementById('produto').value= '';
+                document.getElementById('valor').value= '';
+               
+            })
+        })
+    })
+</script>
 {% endblock %}

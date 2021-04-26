@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 {% if current_user.is_authenticated %}
-<ul class="nav">
+<!--<ul class="nav">
     <li class="nav-item">
       <a class="nav-link active" href="#">Active</a>
     </li>
@@ -14,10 +14,11 @@
       <a class="nav-link disabled" href="#">Disabled</a>
     </li>
   </ul>
+  -->
 <div class="container" id="container"><br>
   <h2>Bem vindo: {{ current_user.nome }}</h2><br>
   <!--<h2>{{ current_user.email }}</h2>-->
-  <div class="d-grid gap-2 shadow  mb-5 bg-white rounded">
+<div class="d-grid gap-2 shadow  mb-5 bg-white rounded">
       <div class="jumbotron jumbotron-fluid">
           <div class="container">
             <h1 class="display-4">Vamos Começar a Comanda?</h1>
@@ -65,7 +66,17 @@
 
   function comecar(){
       var nome_restaurante = $('#nome_restaurante_select').val();
-      console.log(nome_restaurante)
+      var lista_precos;
+      var select_e;
+      $.ajax({
+                  url:'/pegar_preco',
+                  type:'POST',
+                  data:{'nome_restaurante':nome_restaurante}
+                }).then(function(e){
+                  lista_precos  = e
+                  //console.log(lista_precos)
+                })
+      //console.log(nome_restaurante)
       $('#nome_restaurante_subs').text(nome_restaurante);
 
       var button_s = $('#for');
@@ -83,19 +94,41 @@
       //DIREITA
       var a = document.createElement('a');
       a.innerHTML = 'Adicionar uma linha'
+     
+
+      var botao_salvar_valores = document.createElement('button');
       var svg = `<svg id='adicionar' xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="a" viewBox="0 0 16 16" >
                       <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                   </svg>
                   `
-
-      var botao_salvar_valores = document.createElement('button');
       botao_salvar_valores.type = 'submit';
       botao_salvar_valores.innerHTML = 'Analisar Valores';
       botao_salvar_valores.className = "btn btn-success";
       botao_salvar_valores.onclick = function(){
-        console.log('botao salvar valores')
+        //console.log('botao salvar valores')
         var inputs = document.getElementsByTagName('input');
+        var select = document.getElementsByTagName('select');
+
+        /*console.log(select)
+        console.log(select['form-control'])
+        console.log('------')
+        console.log(select['1'].value)*/
+        var lista_select = [];
+        Object.keys(select).forEach(function (key){
+        //console.log(inputs[key].value)
+          item=select[key].value
+          console.log(item)
+          lista_select.push(item)
+        })
+        console.log('------')
+        console.log(lista_select)
+        var menos_primeiro = lista_select.slice(1)
+        console.log('3 ------')
+
+
+        
+        /// PEGANDO O SELECT
         //console.log(inputs)
         var lista_inputs = [];
         Object.keys(inputs).forEach(function (key){
@@ -103,8 +136,10 @@
         inputs[key].name=inputs[key].value
         lista_inputs.push(inputs[key].value.replace(',','.'))
         })
-        console.log(lista_inputs)
-        document.getElementById('valor_a_resgatar').value=lista_inputs;
+        //console.log(lista_inputs)
+        console.log(menos_primeiro)
+
+        document.getElementById('valor_a_resgatar').value=lista_inputs+','+menos_primeiro;
         console.log(document.getElementById('valor_a_resgatar').value)
       }
       var br = document.createElement('br')
@@ -119,22 +154,80 @@
 
       div_d.appendChild(botao_salvar_valores);
 
+      
+      var id_teste =1;
       $('#adicionar').click(function(){
-          console.log($('#adicionar'))
-          console.log("SVG")
+          //console.log($('#adicionar'))
+          //console.log("SVG")
+          //console.log("id teste: " + id_teste)
+          //console.log("-------ID -------")
+
             var lista = document.getElementsByTagName('h5');
               
               var lista_id = [] ;
 
               Object.keys(lista).forEach(function (key){
                   item = lista[key].id
-                  console.log(item);
+                  //console.log(item);
                   lista_id.push(item);
               })
               //console.log(lista_id);
             
             lista_id.forEach(function(essa){
+              //console.log(essa)
+              if (essa.toString()=='Produto'){
+                //console.log("É CLIENTE")
+                var divv = document.getElementById('input'+essa);
+                select_e = document.createElement('select');
+                select_e.className = 'form-control';
+                select_e.id='filtro';
+                var option_e1 = document.createElement('option');
+                option_e1.text = "--Escolha o Produto--"
+                select_e.appendChild(option_e1)
+                var br = document.createElement('br');
 
+                divv.appendChild(br);
+
+                divv.appendChild(select_e);
+
+                // ____-------_-----__---- PEGAR OS VALORES DOS PRODUTOS CADASTRADOS PELO RESTAURANTE DO BANCO DE DAOS E RETORNAR COMO OPTION
+                $.ajax({
+                  url:'/pegar_produtos',
+                  type:'POST',
+                  data:{'nome_restaurante':nome_restaurante}
+                }).then(function(e){
+                  
+                  //console.log('------')
+
+                  //console.log(e)
+                  //console.log('------')
+
+                  var lista_produtos = [] ;
+
+                  Object.keys(e).forEach(function (key){
+                      item = e[key]
+                      //console.log(item);
+                      lista_produtos.push(item);
+                  })
+                  //console.log(lista_produtos['0'])
+                  lista_produtos['0'].forEach(function(essa){
+                    //console.log('ESSA ------')
+
+                      //console.log(essa)
+                      var option_e2 = document.createElement('option');
+                      option_e2.text = essa
+                      select_e.appendChild(option_e2)
+
+                      
+                  })
+                  divv.appendChild(select_e);
+                  
+                  
+                })
+                
+
+            
+            }else{
               var divv = document.getElementById('input'+essa);
               var input_e = document.createElement('input');
               
@@ -148,14 +241,39 @@
               var br = document.createElement('br');
               divv.appendChild(br);
               divv.appendChild(input_e);
-            
+              };
+          
+              
+            });
+            var keys_items = []
+            Object.keys(lista_precos).forEach(function (key){
+                item = lista_precos[key]
+                //console.log(item);
+                keys_items.push(item);
             })
-      })  
+            //console.log(keys_items)  
 
-      //$('#prox').DataTable();
+            
+            
+
+    })
+
+    // PROBLEMAS AO MUDAR ESSA FUNCAO< O ID È CRIADO DPS DESSA FUNCAO
    
+
+
 }
-    
+
+
+
+
+
+
+
+
+
+
+  
     
 </script>
 {% endif %}

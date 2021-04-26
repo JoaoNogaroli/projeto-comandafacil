@@ -1,7 +1,8 @@
 from inicializacao import app, db
-from flask import Flask, request, render_template, url_for, session, json
+from flask import Flask, request, render_template, url_for, session, json,jsonify
+
 import os
-from classe_modelo import Users, Restaurante
+from classe_modelo import Users, Restaurante, Produto
 from sqlalchemy import or_
 import psycopg2
 from flask_login import login_user, logout_user
@@ -84,6 +85,7 @@ def logar_restaurante():
 
         restaurante = Restaurante.query.filter_by(email_res=email_res).first()
     except Exception as e:
+        
         return render_template('error_page.html')
 
     if not restaurante or not restaurante.verify_password(senha_res):
@@ -93,6 +95,7 @@ def logar_restaurante():
         return render_template('restaurante_logado.html')
 
     except Exception as e:
+        
         return render_template('error_page.html')
 
 def grouper(n, iterable, fillvalue=None):
@@ -110,7 +113,7 @@ def iniciar_comanda():
        valores_finais.append(valor_a_resgatar_alterado[i])
 
     #print(valores_finais)
-    lista_pegar = ['Cliente','Produto','Quantidade','Preço/Un']
+    lista_pegar = ['Cliente','Quantidade','Preço/Un','Produto']
     tamanho_total = int(len(valores_finais))
     tamanho_dividido = int(len(valores_finais)/len(lista_pegar))
     
@@ -139,7 +142,7 @@ def iniciar_comanda():
         print(e)
     #TRANSFORMOU EM DATAFRAME FINAL
     new = pd.DataFrame.from_dict(res)
-    #print(items)
+    print(new)
     linhas = new.shape[0]
     #print(new.shape[0])
     session['new'] = new.to_json()
@@ -192,8 +195,12 @@ def teste():
     #print(lista_clientes)
     #print('3 -------')
     lista_clientes_conta= resp['data']
+
+    exatos_dez_por_cliente = []
+    for item in lista_clientes_conta:
+        exatos_dez_por_cliente.append("{:.2f}".format(item*1.1))
     #print(lista_clientes_conta)
-    lista_final = list(zip(lista_clientes,lista_clientes_conta))
+    lista_final = list(zip(lista_clientes,lista_clientes_conta,exatos_dez_por_cliente))
     #print(lista_final)
 
     #--------- Parte dos valores de cada um termianda
@@ -208,9 +215,75 @@ def teste():
     valor_dez_por_cliente = dez_por_cento_sem_format/quantidade_de_clientes
     valor_dez_por_cliente = ("{:.2f}".format(valor_dez_por_cliente))
 
-    #print(valor_dez_por_cliente)
 
-    return {'contatotal':contatotal, 'contatotal_mais_dez':contatotal_mais_dez, 'lista_final':lista_final,'dez_por_cento':dez_por_cento, 'valor_dez_por_cliente':valor_dez_por_cliente}
+    #print(valor_dez_por_cliente)
+    #--------- Parte dos 10% de cada cliente terminada
+
+    #--------- Error DEscoberto- --- Cada cliente paga seus 10%
+    
+
+   
+    # ---- TENTANDO JUNTAR 2 listas
+    
+
+    return {'contatotal':contatotal, 'contatotal_mais_dez':contatotal_mais_dez, 'lista_final':lista_final,'dez_por_cento':dez_por_cento, 'valor_dez_por_cliente':valor_dez_por_cliente,'exatos_dez_por_cliente':exatos_dez_por_cliente}
+
+@app.route('/cadastrar_produto', methods=['POST'])
+def cadastrar_produto():
+    nome_restaurante = request.form['nomeres']
+
+    session['nome_restaurante'] = nome_restaurante
+
+    nome_produto = request.form['produto']
+    valor_produto = request.form['valor']
+    
+    if nome_restaurante and valor_produto and valor_produto:
+        try:
+            item_final = Produto(nome_restaurante, nome_produto, valor_produto)
+            db.session.add(item_final)
+            db.session.commit()
+            return 'Cadastrado com sucesso'
+        except Exception as e:
+            print(e)
+            return 'Error ao cadastrar, produto já cadastrado.'
+
+@app.route('/pegar_produtos', methods=['POST']) 
+def pegar_produtos():
+    nome_restaurante = request.form['nome_restaurante']
+    print(nome_restaurante)
+    
+    tabela_produtos = db.Table('produtos', db.metadata)
+    produtos = []
+    produtos = [r[2] for r in db.session.query(tabela_produtos).filter_by(nome_restaurante=nome_restaurante).all()]
+
+    print(type(produtos))
+    print('-------')
+   
+    print(produtos)
+
+    return {'produtos':produtos}
+
+@app.route('/pegar_preco', methods=['POST'])
+def pegar_preco():
+    nome_restaurante = request.form['nome_restaurante']
+
+    tabela_produtos = db.Table('produtos', db.metadata)
+
+    produtos = []
+    produtos = [r[2] for r in db.session.query(tabela_produtos).filter_by(nome_restaurante=nome_restaurante).all()]
+
+    precos = []
+    precos = [r[3] for r in db.session.query(tabela_produtos).filter_by(nome_restaurante=nome_restaurante).all()]
+    
+    print(produtos)
+    print(precos)
+
+    preco_produto = dict(zip(produtos,precos))
+
+    print(preco_produto)
+
+
+    return preco_produto
 
 if __name__  == '__main__':
     app.run(debug=True, port=port)
